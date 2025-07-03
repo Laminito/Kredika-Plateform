@@ -10,7 +10,10 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      ProductImage.belongsTo(models.Product, {
+        foreignKey: 'productId',
+        as: 'product'
+      });
     }
   }
   ProductImage.init({
@@ -19,7 +22,10 @@ module.exports = (sequelize, DataTypes) => {
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true
     },
-    productId: DataTypes.UUID,
+    productId: {
+      type: DataTypes.UUID,
+      allowNull: false
+    },
     imageUrl: DataTypes.STRING,
     altText: DataTypes.STRING,
     position: DataTypes.INTEGER,
@@ -27,6 +33,16 @@ module.exports = (sequelize, DataTypes) => {
     isDeleted: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW
     }
   }, {
     sequelize,
@@ -34,7 +50,7 @@ module.exports = (sequelize, DataTypes) => {
     schema: 'kredika_app',
     tableName: 'product_images',
     hooks: {
-      beforeDestroy: (instance, options) => {
+      beforeDestroy: (instance, _options) => {
         // Suppression logique au lieu de physique
         instance.isDeleted = true;
         instance.save();

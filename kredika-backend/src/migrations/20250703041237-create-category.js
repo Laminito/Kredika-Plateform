@@ -21,13 +21,23 @@ module.exports = {
         type: Sequelize.STRING
       },
       parentId: {
-        type: Sequelize.UUID
+        type: Sequelize.UUID,
+        references: {
+          model: {
+            tableName: 'categories',
+            schema: 'kredika_app'
+          },
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
       },
       position: {
         type: Sequelize.INTEGER
       },
       isActive: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
+        defaultValue: true
       },
       seoTitle: {
         type: Sequelize.STRING
@@ -36,21 +46,29 @@ module.exports = {
         type: Sequelize.TEXT
       },
       isDeleted: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       }
-    },{
+    }, {
       schema: 'kredika_app'
     });
+
+    // Indexes
+    await queryInterface.addIndex({ tableName: 'categories', schema: 'kredika_app' }, ['slug']);
+    await queryInterface.addIndex({ tableName: 'categories', schema: 'kredika_app' }, ['parentId']);
   },
-  async down(queryInterface, Sequelize) {
+
+  async down(queryInterface) {
     await queryInterface.dropTable('categories', {
       schema: 'kredika_app'
     });

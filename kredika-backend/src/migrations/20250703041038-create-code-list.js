@@ -9,10 +9,12 @@ module.exports = {
         primaryKey: true
       },
       type: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       code: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       value: {
         type: Sequelize.STRING
@@ -24,7 +26,8 @@ module.exports = {
         type: Sequelize.TEXT
       },
       isActive: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
+        defaultValue: true
       },
       position: {
         type: Sequelize.INTEGER
@@ -33,21 +36,33 @@ module.exports = {
         type: Sequelize.JSON
       },
       isDeleted: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       }
     }, {
       schema: 'kredika_app'
     });
+
+    // Indexes
+    await queryInterface.addIndex({ tableName: 'code_lists', schema: 'kredika_app' }, ['type']);
+    await queryInterface.addIndex({ tableName: 'code_lists', schema: 'kredika_app' }, ['code']);
+    await queryInterface.addIndex({ tableName: 'code_lists', schema: 'kredika_app' }, ['type', 'code'], {
+      name: 'idx_unique_type_code',
+      unique: true
+    });
   },
-  async down(queryInterface, Sequelize) {
+
+  async down(queryInterface) {
     await queryInterface.dropTable('code_lists', {
       schema: 'kredika_app'
     });

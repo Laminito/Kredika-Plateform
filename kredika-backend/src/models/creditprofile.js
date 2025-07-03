@@ -16,62 +16,71 @@ module.exports = (sequelize, DataTypes) => {
       });
     }
   }
-}
-CreditProfile.init({
-  id: {
-    type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4,
-    primaryKey: true
-  },
-  userId: DataTypes.UUID,
-  creditScore: DataTypes.INTEGER,
-  creditLimit: {
-    type: DataTypes.DECIMAL(10, 2),
-    allowNull: false
-  },
-  availableCredit: {
-    type: DataTypes.DECIMAL(10, 2),
-    allowNull: false
-  },
-  totalDebt: {
-    type: DataTypes.DECIMAL(10, 2),
-    allowNull: false,
-    defaultValue: 0.00
-  },
-  defaultCount: DataTypes.INTEGER,
-  lastCreditReview: DataTypes.DATE,
-  isDeleted: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false
-  }
-}, {
-  sequelize,
-  modelName: 'CreditProfile',
-  schema: 'kredika_app',
-  tableName: 'credit_profiles',
-  hooks: {
-    beforeDestroy: (instance, options) => {
-      // Suppression logique au lieu de physique
-      instance.isDeleted = true;
-      instance.save();
-      return false; // Empêche la suppression physique
-    }
-  },
-  defaultScope: {
-    where: {
-      isDeleted: false
-    }
-  },
-  scopes: {
-    withDeleted: {
-      where: {}
+  CreditProfile.init({
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true
     },
-    onlyDeleted: {
+    userId: DataTypes.UUID,
+    creditScore: DataTypes.INTEGER,
+    creditLimit: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false
+    },
+    availableCredit: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false
+    },
+    totalDebt: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
+      defaultValue: 0.00
+    },
+    defaultCount: DataTypes.INTEGER,
+    lastCreditReview: DataTypes.DATE,
+    isDeleted: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW
+    }
+  }, {
+    sequelize,
+    modelName: 'CreditProfile',
+    schema: 'kredika_app',
+    tableName: 'credit_profiles',
+    hooks: {
+      beforeDestroy: (instance, _options) => {
+        // Suppression logique au lieu de physique
+        instance.isDeleted = true;
+        instance.save();
+        return false; // Empêche la suppression physique
+      }
+    },
+    defaultScope: {
       where: {
-        isDeleted: true
+        isDeleted: false
+      }
+    },
+    scopes: {
+      withDeleted: {
+        where: {}
+      },
+      onlyDeleted: {
+        where: {
+          isDeleted: true
+        }
       }
     }
-  }
-});
-return CreditProfile;
+  });
+  return CreditProfile;
 };

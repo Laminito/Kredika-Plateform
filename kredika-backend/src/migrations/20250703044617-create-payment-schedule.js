@@ -9,7 +9,17 @@ module.exports = {
         primaryKey: true
       },
       installmentPlanId: {
-        type: Sequelize.UUID
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+          model: {
+            tableName: 'installment_plans',
+            schema: 'kredika_app'
+          },
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
       },
       installmentNumber: {
         type: Sequelize.INTEGER
@@ -18,13 +28,13 @@ module.exports = {
         type: Sequelize.DATE
       },
       amount: {
-        type: Sequelize.DECIMAL
+        type: Sequelize.DECIMAL(10, 2)
       },
       paidAmount: {
-        type: Sequelize.DECIMAL
+        type: Sequelize.DECIMAL(10, 2)
       },
       penaltyAmount: {
-        type: Sequelize.DECIMAL
+        type: Sequelize.DECIMAL(10, 2)
       },
       statusCode: {
         type: Sequelize.STRING
@@ -33,20 +43,45 @@ module.exports = {
         type: Sequelize.DATE
       },
       isDeleted: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       }
     }, {
       schema: 'kredika_app'
     });
+
+    await queryInterface.addIndex(
+      { tableName: 'payment_schedules', schema: 'kredika_app' },
+      ['installmentPlanId'],
+      { name: 'idx_payment_schedules_planId' }
+    );
+    await queryInterface.addIndex(
+      { tableName: 'payment_schedules', schema: 'kredika_app' },
+      ['dueDate'],
+      { name: 'idx_payment_schedules_dueDate' }
+    );
+    await queryInterface.addIndex(
+      { tableName: 'payment_schedules', schema: 'kredika_app' },
+      ['statusCode'],
+      { name: 'idx_payment_schedules_statusCode' }
+    );
+    await queryInterface.addIndex(
+      { tableName: 'payment_schedules', schema: 'kredika_app' },
+      ['isDeleted'],
+      { name: 'idx_payment_schedules_isDeleted' }
+    );
   },
+
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('payment_schedules', {
       schema: 'kredika_app'

@@ -1,28 +1,15 @@
-// config/config.js
-module.exports = {
+// config/database.js
+import { Sequelize } from 'sequelize';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const config = {
   development: {
-    username: process.env.DB_USERNAME || 'your_username',
-    password: process.env.DB_PASSWORD || 'your_password',
-    database: 'kredika-db',
-    host: process.env.DB_HOST || '127.0.0.1',
-    port: process.env.DB_PORT || 5432,
-    dialect: 'postgres',
-    schema: 'kredika_app', // Définir le schéma par défaut
-    dialectOptions: {
-      prependSearchPath: true, // Ajouter le schéma au search_path
-    },
-    define: {
-      schema: 'kredika_app', // Schéma par défaut pour tous les modèles
-      timestamps: true,
-      underscored: false, // Utilise camelCase au lieu de snake_case
-    },
-    logging: console.log, // Activer les logs SQL en développement
-  },
-  test: {
-    username: process.env.DB_USERNAME || 'your_username',
-    password: process.env.DB_PASSWORD || 'your_password',
-    database: 'kredika-db-test',
-    host: process.env.DB_HOST || '127.0.0.1',
+    username: process.env.DB_USER || 'postgres',
+    password: process.env.DB_PASS || 'postgres',
+    database: process.env.DB_NAME || 'kredika_db',
+    host: process.env.DB_HOST || 'localhost',
     port: process.env.DB_PORT || 5432,
     dialect: 'postgres',
     schema: 'kredika_app',
@@ -34,12 +21,30 @@ module.exports = {
       timestamps: true,
       underscored: false,
     },
-    logging: false, // Désactiver les logs en test
+    logging: console.log,
+  },
+  test: {
+    username: process.env.DB_USER || 'postgres',
+    password: process.env.DB_PASS || 'postgres',
+    database: process.env.DB_NAME ? `${process.env.DB_NAME}_test` : 'kredika_db_test',
+    host: process.env.DB_HOST || 'localhost',
+    port: process.env.DB_PORT || 5432,
+    dialect: 'postgres',
+    schema: 'kredika_app',
+    dialectOptions: {
+      prependSearchPath: true,
+    },
+    define: {
+      schema: 'kredika_app',
+      timestamps: true,
+      underscored: false,
+    },
+    logging: false,
   },
   production: {
-    username: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME || 'kredika-db',
+    username: process.env.DB_USER,
+    password: process.env.DB_PASS,
+    database: process.env.DB_NAME,
     host: process.env.DB_HOST,
     port: process.env.DB_PORT || 5432,
     dialect: 'postgres',
@@ -56,7 +61,7 @@ module.exports = {
       timestamps: true,
       underscored: false,
     },
-    logging: false, // Désactiver les logs en production
+    logging: false,
     pool: {
       max: 10,
       min: 0,
@@ -65,3 +70,9 @@ module.exports = {
     }
   }
 };
+
+const env = process.env.NODE_ENV || 'development';
+const sequelize = new Sequelize(config[env]);
+
+export { sequelize, config };
+export default sequelize;

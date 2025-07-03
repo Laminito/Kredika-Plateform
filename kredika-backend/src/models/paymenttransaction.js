@@ -24,65 +24,74 @@ module.exports = (sequelize, DataTypes) => {
       });
     }
   }
-}
-PaymentTransaction.init({
-  id: {
-    type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4,
-    primaryKey: true
-  },
-  transactionNumber: DataTypes.STRING,
-  userId: DataTypes.UUID,
-  installmentPlanId: DataTypes.UUID,
-  paymentScheduleId: DataTypes.UUID,
-  amount: {
-    type: DataTypes.DECIMAL(10, 2),
-    allowNull: false
-  },
-  paymentMethodCode: DataTypes.STRING,
-  externalTransactionId: DataTypes.STRING,
-  gatewayResponse: DataTypes.JSON,
-  statusCode: DataTypes.STRING,
-  processedAt: DataTypes.DATE,
-  failureReason: DataTypes.TEXT,
-  refundedAt: DataTypes.DATE,
-  refundAmount: {
-    type: DataTypes.DECIMAL(10, 2),
-    allowNull: true,
-    defaultValue: 0.00
-  },
-  isDeleted: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false
-  }
-}, {
-  sequelize,
-  modelName: 'PaymentTransaction',
-  schema: 'kredika_app',
-  tableName: 'payment_transactions',
-  hooks: {
-    beforeDestroy: (instance, options) => {
-      // Suppression logique au lieu de physique
-      instance.isDeleted = true;
-      instance.save();
-      return false; // Empêche la suppression physique
-    }
-  },
-  defaultScope: {
-    where: {
-      isDeleted: false
-    }
-  },
-  scopes: {
-    withDeleted: {
-      where: {}
+  PaymentTransaction.init({
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true
     },
-    onlyDeleted: {
+    transactionNumber: DataTypes.STRING,
+    userId: DataTypes.UUID,
+    installmentPlanId: DataTypes.UUID,
+    paymentScheduleId: DataTypes.UUID,
+    amount: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false
+    },
+    paymentMethodCode: DataTypes.STRING,
+    externalTransactionId: DataTypes.STRING,
+    gatewayResponse: DataTypes.JSON,
+    statusCode: DataTypes.STRING,
+    processedAt: DataTypes.DATE,
+    failureReason: DataTypes.TEXT,
+    refundedAt: DataTypes.DATE,
+    refundAmount: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: true,
+      defaultValue: 0.00
+    },
+    isDeleted: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW
+    }
+  }, {
+    sequelize,
+    modelName: 'PaymentTransaction',
+    schema: 'kredika_app',
+    tableName: 'payment_transactions',
+    hooks: {
+      beforeDestroy: (instance, _options) => {
+        // Suppression logique au lieu de physique
+        instance.isDeleted = true;
+        instance.save();
+        return false; // Empêche la suppression physique
+      }
+    },
+    defaultScope: {
       where: {
-        isDeleted: true
+        isDeleted: false
+      }
+    },
+    scopes: {
+      withDeleted: {
+        where: {}
+      },
+      onlyDeleted: {
+        where: {
+          isDeleted: true
+        }
       }
     }
-  }
-});
-return PaymentTransaction;
+  });
+  return PaymentTransaction;
 };

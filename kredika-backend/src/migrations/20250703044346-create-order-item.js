@@ -40,6 +40,24 @@ module.exports = {
     }, {
       schema: 'kredika_app'
     });
+    await queryInterface.addIndex(
+      { schema: 'kredika_app', tableName: 'order_items' },
+      ['orderId'],
+      { name: 'idx_order_items_orderId' }
+    );
+
+    await queryInterface.addIndex(
+      { schema: 'kredika_app', tableName: 'order_items' },
+      ['productId'],
+      { name: 'idx_order_items_productId' }
+    );
+
+    await queryInterface.addIndex(
+      { schema: 'kredika_app', tableName: 'order_items' },
+      ['isDeleted'],
+      { name: 'idx_order_items_isDeleted' }
+    );
+
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('order_items', {

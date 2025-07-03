@@ -1,14 +1,8 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class Order extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
       Order.belongsTo(models.User, {
         foreignKey: 'userId',
@@ -28,27 +22,47 @@ module.exports = (sequelize, DataTypes) => {
       });
     }
   }
+
   Order.init({
     id: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true
     },
-    orderNumber: DataTypes.STRING,
-    userId: DataTypes.UUID,
-    deliveryAddressId: DataTypes.UUID,
-    statusCode: DataTypes.STRING,
-    paymentStatusCode: DataTypes.STRING,
+    orderNumber: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+    userId: {
+      type: DataTypes.UUID,
+      allowNull: false
+    },
+    deliveryAddressId: {
+      type: DataTypes.UUID,
+      allowNull: true
+    },
     totalAmount: {
       type: DataTypes.DECIMAL(10, 2),
       allowNull: false
     },
+    statusCode: DataTypes.STRING,
+    paymentStatusCode: DataTypes.STRING,
     notes: DataTypes.TEXT,
     deliveryDate: DataTypes.DATE,
     completedAt: DataTypes.DATE,
     isDeleted: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW
     }
   }, {
     sequelize,
@@ -56,11 +70,10 @@ module.exports = (sequelize, DataTypes) => {
     schema: 'kredika_app',
     tableName: 'orders',
     hooks: {
-      beforeDestroy: (instance, options) => {
-        // Suppression logique au lieu de physique
+      beforeDestroy: (instance, _options) => {
         instance.isDeleted = true;
         instance.save();
-        return false; // Empêche la suppression physique
+        return false;
       }
     },
     defaultScope: {
@@ -79,5 +92,6 @@ module.exports = (sequelize, DataTypes) => {
       }
     }
   });
+
   return Order;
 };

@@ -42,6 +42,16 @@ module.exports = (sequelize, DataTypes) => {
     isDeleted: {
       type: DataTypes.BOOLEAN,
       defaultValue: false
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW
     }
   }, {
     sequelize,
@@ -49,7 +59,7 @@ module.exports = (sequelize, DataTypes) => {
     schema: 'kredika_app',
     tableName: 'categories',
     hooks: {
-      beforeDestroy: (instance, options) => {
+      beforeDestroy: (instance, _options) => {
         // Suppression logique au lieu de physique
         instance.isDeleted = true;
         instance.save();

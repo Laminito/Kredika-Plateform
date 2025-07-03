@@ -12,28 +12,61 @@ module.exports = {
         type: Sequelize.STRING
       },
       userId: {
-        type: Sequelize.UUID
+        type: Sequelize.UUID,
+        references: {
+          model: {
+            tableName: 'users',
+            schema: 'kredika_app'
+          },
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
       },
       orderId: {
-        type: Sequelize.UUID
+        type: Sequelize.UUID,
+        references: {
+          model: {
+            tableName: 'orders',
+            schema: 'kredika_app'
+          },
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
       },
       productId: {
-        type: Sequelize.UUID
+        type: Sequelize.UUID,
+        references: {
+          model: {
+            tableName: 'products',
+            schema: 'kredika_app'
+          },
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
       },
       principalAmount: {
-        type: Sequelize.DECIMAL
+        type: Sequelize.DECIMAL(10, 2),
+        allowNull: false
       },
       commissionRate: {
-        type: Sequelize.DECIMAL
+        type: Sequelize.DECIMAL(5, 4),
+        allowNull: false,
+        comment: 'Commission rate as percentage (e.g., 0.1250 for 12.50%)'
       },
       commissionAmount: {
-        type: Sequelize.DECIMAL
+        type: Sequelize.DECIMAL(10, 2),
+        allowNull: false
       },
       totalAmount: {
-        type: Sequelize.DECIMAL
+        type: Sequelize.DECIMAL(10, 2),
+        allowNull: false
       },
       installmentAmount: {
-        type: Sequelize.DECIMAL
+        type: Sequelize.DECIMAL(10, 2),
+        allowNull: false
       },
       durationMonths: {
         type: Sequelize.INTEGER
@@ -57,34 +90,48 @@ module.exports = {
         type: Sequelize.STRING
       },
       latePenalty: {
-        type: Sequelize.DECIMAL
+        type: Sequelize.DECIMAL(10, 2),
+        allowNull: true,
+        defaultValue: 0.00
       },
       completedAt: {
         type: Sequelize.DATE
       },
       isDeleted: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       }
     }, {
       schema: 'kredika_app'
     });
-    // Index pour installment_plans
+
+    // Indexes
     await queryInterface.addIndex('installment_plans', ['userId'], { schema: 'kredika_app' });
     await queryInterface.addIndex('installment_plans', ['orderId'], { schema: 'kredika_app' });
     await queryInterface.addIndex('installment_plans', ['productId'], { schema: 'kredika_app' });
     await queryInterface.addIndex('installment_plans', ['statusCode'], { schema: 'kredika_app' });
     await queryInterface.addIndex('installment_plans', ['startDate'], { schema: 'kredika_app' });
     await queryInterface.addIndex('installment_plans', ['endDate'], { schema: 'kredika_app' });
-    await queryInterface.addIndex('installment_plans', ['planNumber'], { schema: 'kredika_app', unique: true });
+    await queryInterface.addIndex('installment_plans', ['planNumber'], {
+      schema: 'kredika_app',
+      unique: true
+    });
+    await queryInterface.addIndex('installment_plans', ['isDeleted'], {
+      schema: 'kredika_app',
+      name: 'idx_installment_plans_isDeleted'
+    });
   },
+
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('installment_plans', {
       schema: 'kredika_app'

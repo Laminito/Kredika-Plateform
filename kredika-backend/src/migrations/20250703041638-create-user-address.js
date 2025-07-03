@@ -9,7 +9,16 @@ module.exports = {
         primaryKey: true
       },
       userId: {
-        type: Sequelize.UUID
+        type: Sequelize.UUID,
+        references: {
+          model: {
+            tableName: 'users',
+            schema: 'kredika_app'
+          },
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'SET NULL'
       },
       typeCode: {
         type: Sequelize.STRING
@@ -30,23 +39,33 @@ module.exports = {
         type: Sequelize.STRING
       },
       isDefault: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       },
       isDeleted: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       }
     }, {
       schema: 'kredika_app'
     });
+
+    // Indexes recommandés
+    await queryInterface.addIndex({ tableName: 'user_addresses', schema: 'kredika_app' }, ['userId']);
+    await queryInterface.addIndex({ tableName: 'user_addresses', schema: 'kredika_app' }, ['isDeleted']);
+    await queryInterface.addIndex({ tableName: 'user_addresses', schema: 'kredika_app' }, ['isDefault']);
   },
+
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('user_addresses', {
       schema: 'kredika_app'

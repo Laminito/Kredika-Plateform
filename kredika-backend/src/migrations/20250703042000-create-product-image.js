@@ -9,7 +9,17 @@ module.exports = {
         primaryKey: true
       },
       productId: {
-        type: Sequelize.UUID
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+          model: {
+            tableName: 'products',
+            schema: 'kredika_app'
+          },
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
       },
       imageUrl: {
         type: Sequelize.STRING
@@ -24,21 +34,31 @@ module.exports = {
         type: Sequelize.BOOLEAN
       },
       isDeleted: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       },
       createdAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
       updatedAt: {
         allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       }
     }, {
       schema: 'kredika_app'
     });
+
+    await queryInterface.addIndex(
+      { tableName: 'product_images', schema: 'kredika_app' },
+      ['productId'],
+      { name: 'idx_product_images_productId' }
+    );
   },
-  async down(queryInterface, Sequelize) {
+
+  async down(queryInterface) {
     await queryInterface.dropTable('product_images', {
       schema: 'kredika_app'
     });

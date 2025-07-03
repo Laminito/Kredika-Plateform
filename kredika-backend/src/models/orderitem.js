@@ -42,6 +42,16 @@ OrderItem.init({
   isDeleted: {
     type: DataTypes.BOOLEAN,
     defaultValue: false
+  },
+  createdAt: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW
+  },
+  updatedAt: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW
   }
 }, {
   sequelize,
@@ -49,7 +59,7 @@ OrderItem.init({
   schema: 'kredika_app',
   tableName: 'order_items',
   hooks: {
-    beforeDestroy: (instance, options) => {
+    beforeDestroy: (instance, _options) => {
       // Suppression logique au lieu de physique
       instance.isDeleted = true;
       instance.save();
