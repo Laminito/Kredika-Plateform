@@ -58,10 +58,17 @@ module.exports = {
         allowNull: false,
         type: Sequelize.DATE
       }
-    },{
+    }, {
       schema: 'kredika_app'
     });
-    
+    // Index pour payment_transactions
+    await queryInterface.addIndex('payment_transactions', ['userId'], { schema: 'kredika_app' });
+    await queryInterface.addIndex('payment_transactions', ['installmentPlanId'], { schema: 'kredika_app' });
+    await queryInterface.addIndex('payment_transactions', ['paymentScheduleId'], { schema: 'kredika_app' });
+    await queryInterface.addIndex('payment_transactions', ['statusCode'], { schema: 'kredika_app' });
+    await queryInterface.addIndex('payment_transactions', ['transactionNumber'], { schema: 'kredika_app', unique: true });
+    await queryInterface.addIndex('payment_transactions', ['externalTransactionId'], { schema: 'kredika_app' });
+    await queryInterface.addIndex('payment_transactions', ['processedAt'], { schema: 'kredika_app' });
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('payment_transactions', {

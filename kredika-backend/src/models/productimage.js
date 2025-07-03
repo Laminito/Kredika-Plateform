@@ -14,17 +14,48 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   ProductImage.init({
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true
+    },
     productId: DataTypes.UUID,
     imageUrl: DataTypes.STRING,
     altText: DataTypes.STRING,
     position: DataTypes.INTEGER,
     isPrimary: DataTypes.BOOLEAN,
-    isDeleted: DataTypes.BOOLEAN
+    isDeleted: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    }
   }, {
     sequelize,
     modelName: 'ProductImage',
     schema: 'kredika_app',
-    tableName: 'product_images' 
+    tableName: 'product_images',
+    hooks: {
+      beforeDestroy: (instance, options) => {
+        // Suppression logique au lieu de physique
+        instance.isDeleted = true;
+        instance.save();
+        return false; // Empêche la suppression physique
+      }
+    },
+    defaultScope: {
+      where: {
+        isDeleted: false
+      }
+    },
+    scopes: {
+      withDeleted: {
+        where: {}
+      },
+      onlyDeleted: {
+        where: {
+          isDeleted: true
+        }
+      }
+    }
   });
   return ProductImage;
 };

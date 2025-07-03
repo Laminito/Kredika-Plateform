@@ -10,29 +10,101 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      User.hasMany(models.Order, {
+        foreignKey: 'userId',
+        as: 'orders'
+      });
+      User.hasOne(models.CreditProfile, {
+        foreignKey: 'userId',
+        as: 'creditProfile'
+      });
+      User.hasMany(models.UserAddress, {
+        foreignKey: 'userId',
+        as: 'addresses'
+      });
+      User.hasMany(models.Cart, {
+        foreignKey: 'userId',
+        as: 'carts'
+      });
+      User.hasMany(models.InstallmentPlan, {
+        foreignKey: 'userId',
+        as: 'installmentPlans'
+      });
+      User.hasMany(models.PaymentTransaction, {
+        foreignKey: 'userId',
+        as: 'paymentTransactions'
+      });
     }
   }
   User.init({
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true
+    },
     fullName: DataTypes.STRING,
-    email: DataTypes.STRING,
-    phoneNumber: DataTypes.STRING,
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      validate: {
+        isEmail: true,
+        notEmpty: true
+      }
+    },
+    phoneNumber: {
+      type: DataTypes.STRING,
+      validate: {
+        is: /^[+]?[\d\s-()]+$/
+      }
+    },
     dateOfBirth: DataTypes.DATE,
     nationalId: DataTypes.STRING,
     profession: DataTypes.STRING,
-    monthlyIncome: DataTypes.DECIMAL,
+    monthlyIncome: {
+      type: DataTypes.DECIMAL(10, 2),
+      validate: {
+        min: 0
+      }
+    },
     roleCode: DataTypes.STRING,
     isVerified: DataTypes.BOOLEAN,
     emailVerified: DataTypes.BOOLEAN,
     phoneVerified: DataTypes.BOOLEAN,
     keycloakId: DataTypes.STRING,
     statusCode: DataTypes.STRING,
-    isDeleted: DataTypes.BOOLEAN
+    isDeleted: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    }
   }, {
     sequelize,
     modelName: 'User',
     schema: 'kredika_app',
-    tableName: 'users'
+    tableName: 'users',
+    hooks: {
+      beforeDestroy: (instance, options) => {
+        // Suppression logique au lieu de physique
+        instance.isDeleted = true;
+        instance.save();
+        return false; // Empêche la suppression physique
+      }
+    },
+    defaultScope: {
+      where: {
+        isDeleted: false
+      }
+    },
+    scopes: {
+      withDeleted: {
+        where: {}
+      },
+      onlyDeleted: {
+        where: {
+          isDeleted: true
+        }
+      }
+    }
   });
   return User;
 };

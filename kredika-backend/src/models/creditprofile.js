@@ -10,23 +10,68 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      CreditProfile.belongsTo(models.User, {
+        foreignKey: 'userId',
+        as: 'user'
+      });
     }
   }
-  CreditProfile.init({
-    userId: DataTypes.UUID,
-    creditScore: DataTypes.INTEGER,
-    creditLimit: DataTypes.DECIMAL,
-    availableCredit: DataTypes.DECIMAL,
-    totalDebt: DataTypes.DECIMAL,
-    defaultCount: DataTypes.INTEGER,
-    lastCreditReview: DataTypes.DATE,
-    isDeleted: DataTypes.BOOLEAN
-  }, {
-    sequelize,
-    modelName: 'CreditProfile',
-    schema: 'kredika_app',
-    tableName: 'credit_profiles'
-  });
-  return CreditProfile;
+}
+CreditProfile.init({
+  id: {
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
+    primaryKey: true
+  },
+  userId: DataTypes.UUID,
+  creditScore: DataTypes.INTEGER,
+  creditLimit: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false
+  },
+  availableCredit: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false
+  },
+  totalDebt: {
+    type: DataTypes.DECIMAL(10, 2),
+    allowNull: false,
+    defaultValue: 0.00
+  },
+  defaultCount: DataTypes.INTEGER,
+  lastCreditReview: DataTypes.DATE,
+  isDeleted: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  }
+}, {
+  sequelize,
+  modelName: 'CreditProfile',
+  schema: 'kredika_app',
+  tableName: 'credit_profiles',
+  hooks: {
+    beforeDestroy: (instance, options) => {
+      // Suppression logique au lieu de physique
+      instance.isDeleted = true;
+      instance.save();
+      return false; // Empêche la suppression physique
+    }
+  },
+  defaultScope: {
+    where: {
+      isDeleted: false
+    }
+  },
+  scopes: {
+    withDeleted: {
+      where: {}
+    },
+    onlyDeleted: {
+      where: {
+        isDeleted: true
+      }
+    }
+  }
+});
+return CreditProfile;
 };

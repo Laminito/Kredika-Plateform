@@ -9,56 +9,104 @@ module.exports = {
         primaryKey: true
       },
       fullName: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(100),
+        allowNull: false
       },
       email: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(150),
+        allowNull: false,
+        unique: true
       },
       phoneNumber: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(20),
+        allowNull: true
       },
       dateOfBirth: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        allowNull: true
       },
       nationalId: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(50),
+        allowNull: true,
+        unique: true
       },
       profession: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(100),
+        allowNull: true
       },
       monthlyIncome: {
-        type: Sequelize.DECIMAL
+        type: Sequelize.DECIMAL(10, 2),
+        allowNull: true
       },
       roleCode: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(20),
+        allowNull: false,
+        defaultValue: 'CUSTOMER'
       },
       isVerified: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       },
       emailVerified: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       },
       phoneVerified: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       },
       keycloakId: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(100),
+        allowNull: true,
+        unique: true
       },
       statusCode: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(20),
+        allowNull: false,
+        defaultValue: 'ACTIVE'
       },
       isDeleted: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.BOOLEAN,
+        defaultValue: false
       },
       createdAt: {
-        allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        allowNull: false
       },
       updatedAt: {
-        allowNull: false,
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        allowNull: false
       }
-    },{
+    }, {
+      schema: 'kredika_app'
+    });
+    await queryInterface.addIndex('products', ['categoryId'], {
+      schema: 'kredika_app'
+    });
+    await queryInterface.addIndex('products', ['sku'], {
+      schema: 'kredika_app',
+      unique: true
+    });
+    await queryInterface.addIndex('products', ['slug'], {
+      schema: 'kredika_app',
+      unique: true
+    });
+    await queryInterface.addIndex('products', ['isActive'], {
+      schema: 'kredika_app'
+    });
+    await queryInterface.addIndex('products', ['isFeatured'], {
+      schema: 'kredika_app'
+    });
+    await queryInterface.addIndex('products', ['creditEligible'], {
+      schema: 'kredika_app'
+    });
+    await queryInterface.addIndex('products', ['isDeleted'], {
+      schema: 'kredika_app'
+    });
+    await queryInterface.addIndex('products', ['price'], {
+      schema: 'kredika_app'
+    });
+    await queryInterface.addIndex('products', ['brand'], {
       schema: 'kredika_app'
     });
   },

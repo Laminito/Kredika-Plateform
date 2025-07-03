@@ -49,6 +49,13 @@ module.exports = {
     }, {
       schema: 'kredika_app'
     });
+    // Index pour orders
+    await queryInterface.addIndex('orders', ['userId'], { schema: 'kredika_app' });
+    await queryInterface.addIndex('orders', ['deliveryAddressId'], { schema: 'kredika_app' });
+    await queryInterface.addIndex('orders', ['statusCode'], { schema: 'kredika_app' });
+    await queryInterface.addIndex('orders', ['paymentStatusCode'], { schema: 'kredika_app' });
+    await queryInterface.addIndex('orders', ['orderNumber'], { schema: 'kredika_app', unique: true });
+    await queryInterface.addIndex('orders', ['deliveryDate'], { schema: 'kredika_app' });
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('orders', {

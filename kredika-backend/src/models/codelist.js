@@ -14,6 +14,11 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   CodeList.init({
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true
+    },
     type: DataTypes.STRING,
     code: DataTypes.STRING,
     value: DataTypes.STRING,
@@ -22,12 +27,38 @@ module.exports = (sequelize, DataTypes) => {
     isActive: DataTypes.BOOLEAN,
     position: DataTypes.INTEGER,
     metadata: DataTypes.JSON,
-    isDeleted: DataTypes.BOOLEAN
+    isDeleted: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    }
   }, {
     sequelize,
     modelName: 'CodeList',
     schema: 'kredika_app',
-    tableName: 'code_lists' 
+    tableName: 'code_lists',
+    hooks: {
+      beforeDestroy: (instance, options) => {
+        // Suppression logique au lieu de physique
+        instance.isDeleted = true;
+        instance.save();
+        return false; // Empêche la suppression physique
+      }
+    },
+    defaultScope: {
+      where: {
+        isDeleted: false
+      }
+    },
+    scopes: {
+      withDeleted: {
+        where: {}
+      },
+      onlyDeleted: {
+        where: {
+          isDeleted: true
+        }
+      }
+    }
   });
   return CodeList;
 };

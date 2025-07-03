@@ -10,10 +10,26 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      Category.hasMany(models.Product, {
+        foreignKey: 'categoryId',
+        as: 'products'
+      });
+      Category.belongsTo(models.Category, {
+        foreignKey: 'parentId',
+        as: 'parent'
+      });
+      Category.hasMany(models.Category, {
+        foreignKey: 'parentId',
+        as: 'children'
+      });
     }
   }
   Category.init({
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true
+    },
     name: DataTypes.STRING,
     description: DataTypes.TEXT,
     slug: DataTypes.STRING,
@@ -23,12 +39,38 @@ module.exports = (sequelize, DataTypes) => {
     isActive: DataTypes.BOOLEAN,
     seoTitle: DataTypes.STRING,
     seoDescription: DataTypes.TEXT,
-    isDeleted: DataTypes.BOOLEAN
+    isDeleted: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    }
   }, {
     sequelize,
     modelName: 'Category',
     schema: 'kredika_app',
-    tableName: 'categories' 
+    tableName: 'categories',
+    hooks: {
+      beforeDestroy: (instance, options) => {
+        // Suppression logique au lieu de physique
+        instance.isDeleted = true;
+        instance.save();
+        return false; // Empêche la suppression physique
+      }
+    },
+    defaultScope: {
+      where: {
+        isDeleted: false
+      }
+    },
+    scopes: {
+      withDeleted: {
+        where: {}
+      },
+      onlyDeleted: {
+        where: {
+          isDeleted: true
+        }
+      }
+    }
   });
   return Category;
 };

@@ -10,19 +10,62 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+      Cart.belongsTo(models.User, {
+        foreignKey: 'userId',
+        as: 'user'
+      });
+      Cart.hasMany(models.CartItem, {
+        foreignKey: 'cartId',
+        as: 'items'
+      });
     }
   }
   Cart.init({
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true
+    },
     userId: DataTypes.UUID,
     statusCode: DataTypes.STRING,
+    totalAmount: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false,
+      defaultValue: 0.00
+    },
     expiresAt: DataTypes.DATE,
-    isDeleted: DataTypes.BOOLEAN
+    isDeleted: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    }
   }, {
     sequelize,
     modelName: 'Cart',
     schema: 'kredika_app',
-    tableName: 'carts'
+    tableName: 'carts',
+    hooks: {
+      beforeDestroy: (instance, options) => {
+        // Suppression logique au lieu de physique
+        instance.isDeleted = true;
+        instance.save();
+        return false; // Empêche la suppression physique
+      }
+    },
+    defaultScope: {
+      where: {
+        isDeleted: false
+      }
+    },
+    scopes: {
+      withDeleted: {
+        where: {}
+      },
+      onlyDeleted: {
+        where: {
+          isDeleted: true
+        }
+      }
+    }
   });
   return Cart;
 };

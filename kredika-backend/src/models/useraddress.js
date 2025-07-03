@@ -14,6 +14,11 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   UserAddress.init({
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true
+    },
     userId: DataTypes.UUID,
     typeCode: DataTypes.STRING,
     street: DataTypes.STRING,
@@ -22,12 +27,38 @@ module.exports = (sequelize, DataTypes) => {
     postalCode: DataTypes.STRING,
     country: DataTypes.STRING,
     isDefault: DataTypes.BOOLEAN,
-    isDeleted: DataTypes.BOOLEAN
+    isDeleted: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    }
   }, {
     sequelize,
     modelName: 'UserAddress',
     schema: 'kredika_app',
-    tableName: 'user_addresses'
+    tableName: 'user_addresses',
+    hooks: {
+      beforeDestroy: (instance, options) => {
+        // Suppression logique au lieu de physique
+        instance.isDeleted = true;
+        instance.save();
+        return false; // Empêche la suppression physique
+      }
+    },
+    defaultScope: {
+      where: {
+        isDeleted: false
+      }
+    },
+    scopes: {
+      withDeleted: {
+        where: {}
+      },
+      onlyDeleted: {
+        where: {
+          isDeleted: true
+        }
+      }
+    }
   });
   return UserAddress;
 };
