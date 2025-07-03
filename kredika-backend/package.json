@@ -3,13 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon server.js",
     "start": "node server.js",
-
-    "migrate:one": "node src/scripts/run-migration.mjs",
-    
     "db:create": "sequelize-cli db:create",
     "db:migrate": "sequelize-cli db:migrate",
     "db:seed": "sequelize-cli db:seed:all",
@@ -23,12 +21,13 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^17.0.1",
     "express": "^5.1.0",
+    "express-session": "^1.18.1",
     "helmet": "^8.1.0",
+    "keycloak-connect": "^26.1.1",
     "morgan": "^1.10.0",
     "pg": "^8.16.3",
     "pg-hstore": "^2.3.4",
