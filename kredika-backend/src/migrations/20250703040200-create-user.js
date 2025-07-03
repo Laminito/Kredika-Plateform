@@ -80,35 +80,7 @@ module.exports = {
     }, {
       schema: 'kredika_app'
     });
-    await queryInterface.addIndex('products', ['categoryId'], {
-      schema: 'kredika_app'
-    });
-    await queryInterface.addIndex('products', ['sku'], {
-      schema: 'kredika_app',
-      unique: true
-    });
-    await queryInterface.addIndex('products', ['slug'], {
-      schema: 'kredika_app',
-      unique: true
-    });
-    await queryInterface.addIndex('products', ['isActive'], {
-      schema: 'kredika_app'
-    });
-    await queryInterface.addIndex('products', ['isFeatured'], {
-      schema: 'kredika_app'
-    });
-    await queryInterface.addIndex('products', ['creditEligible'], {
-      schema: 'kredika_app'
-    });
-    await queryInterface.addIndex('products', ['isDeleted'], {
-      schema: 'kredika_app'
-    });
-    await queryInterface.addIndex('products', ['price'], {
-      schema: 'kredika_app'
-    });
-    await queryInterface.addIndex('products', ['brand'], {
-      schema: 'kredika_app'
-    });
+
   },
   async down(queryInterface, Sequelize) {
     await queryInterface.dropTable('users', {

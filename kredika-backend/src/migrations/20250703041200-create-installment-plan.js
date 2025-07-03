@@ -9,10 +9,12 @@ module.exports = {
         primaryKey: true
       },
       planNumber: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       userId: {
         type: Sequelize.UUID,
+        allowNull: false,
         references: {
           model: {
             tableName: 'users',
@@ -25,6 +27,7 @@ module.exports = {
       },
       orderId: {
         type: Sequelize.UUID,
+        allowNull: true,
         references: {
           model: {
             tableName: 'orders',
@@ -37,6 +40,7 @@ module.exports = {
       },
       productId: {
         type: Sequelize.UUID,
+        allowNull: false,
         references: {
           model: {
             tableName: 'products',
@@ -69,25 +73,33 @@ module.exports = {
         allowNull: false
       },
       durationMonths: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull: false
       },
       frequencyCode: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       totalInstallments: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull: false
       },
       paidInstallments: {
-        type: Sequelize.INTEGER
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        defaultValue: 0
       },
       startDate: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        allowNull: false
       },
       endDate: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        allowNull: false
       },
       statusCode: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       latePenalty: {
         type: Sequelize.DECIMAL(10, 2),
@@ -95,7 +107,8 @@ module.exports = {
         defaultValue: 0.00
       },
       completedAt: {
-        type: Sequelize.DATE
+        type: Sequelize.DATE,
+        allowNull: true
       },
       isDeleted: {
         type: Sequelize.BOOLEAN,
@@ -115,21 +128,67 @@ module.exports = {
       schema: 'kredika_app'
     });
 
-    // Indexes
-    await queryInterface.addIndex('installment_plans', ['userId'], { schema: 'kredika_app' });
-    await queryInterface.addIndex('installment_plans', ['orderId'], { schema: 'kredika_app' });
-    await queryInterface.addIndex('installment_plans', ['productId'], { schema: 'kredika_app' });
-    await queryInterface.addIndex('installment_plans', ['statusCode'], { schema: 'kredika_app' });
-    await queryInterface.addIndex('installment_plans', ['startDate'], { schema: 'kredika_app' });
-    await queryInterface.addIndex('installment_plans', ['endDate'], { schema: 'kredika_app' });
-    await queryInterface.addIndex('installment_plans', ['planNumber'], {
-      schema: 'kredika_app',
-      unique: true
-    });
-    await queryInterface.addIndex('installment_plans', ['isDeleted'], {
-      schema: 'kredika_app',
-      name: 'idx_installment_plans_isDeleted'
-    });
+    // Indexes - syntaxe correcte avec schéma
+    await queryInterface.addIndex(
+      { schema: 'kredika_app', tableName: 'installment_plans' },
+      ['userId'],
+      { name: 'idx_installment_plans_userId' }
+    );
+
+    await queryInterface.addIndex(
+      { schema: 'kredika_app', tableName: 'installment_plans' },
+      ['orderId'],
+      { name: 'idx_installment_plans_orderId' }
+    );
+
+    await queryInterface.addIndex(
+      { schema: 'kredika_app', tableName: 'installment_plans' },
+      ['productId'],
+      { name: 'idx_installment_plans_productId' }
+    );
+
+    await queryInterface.addIndex(
+      { schema: 'kredika_app', tableName: 'installment_plans' },
+      ['statusCode'],
+      { name: 'idx_installment_plans_statusCode' }
+    );
+
+    await queryInterface.addIndex(
+      { schema: 'kredika_app', tableName: 'installment_plans' },
+      ['startDate'],
+      { name: 'idx_installment_plans_startDate' }
+    );
+
+    await queryInterface.addIndex(
+      { schema: 'kredika_app', tableName: 'installment_plans' },
+      ['endDate'],
+      { name: 'idx_installment_plans_endDate' }
+    );
+
+    await queryInterface.addIndex(
+      { schema: 'kredika_app', tableName: 'installment_plans' },
+      ['planNumber'],
+      { name: 'idx_installment_plans_planNumber', unique: true }
+    );
+
+    await queryInterface.addIndex(
+      { schema: 'kredika_app', tableName: 'installment_plans' },
+      ['isDeleted'],
+      { name: 'idx_installment_plans_isDeleted' }
+    );
+
+    // Index composé pour les requêtes fréquentes
+    await queryInterface.addIndex(
+      { schema: 'kredika_app', tableName: 'installment_plans' },
+      ['userId', 'statusCode'],
+      { name: 'idx_installment_plans_userId_statusCode' }
+    );
+
+    await queryInterface.addIndex(
+      { schema: 'kredika_app', tableName: 'installment_plans' },
+      ['orderId', 'statusCode'],
+      { name: 'idx_installment_plans_orderId_statusCode' }
+    );
   },
 
   async down(queryInterface, Sequelize) {

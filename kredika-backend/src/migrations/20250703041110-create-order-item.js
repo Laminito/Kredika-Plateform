@@ -9,10 +9,28 @@ module.exports = {
         primaryKey: true
       },
       orderId: {
-        type: Sequelize.UUID
+        type: Sequelize.UUID,
+        references: {
+          model: {
+            tableName: 'orders',
+            schema: 'kredika_app'
+          },
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
       },
       productId: {
-        type: Sequelize.UUID
+        type: Sequelize.UUID,
+        references: {
+          model: {
+            tableName: 'products',
+            schema: 'kredika_app'
+          },
+          key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'RESTRICT'
       },
       quantity: {
         type: Sequelize.INTEGER

@@ -20,67 +20,66 @@ module.exports = (sequelize, DataTypes) => {
       });
     }
   }
-}
-OrderItem.init({
-  id: {
-    type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4,
-    primaryKey: true
-  },
-  orderId: DataTypes.UUID,
-  productId: DataTypes.UUID,
-  quantity: DataTypes.INTEGER,
-  unitPrice: {
-    type: DataTypes.DECIMAL(10, 2),
-    allowNull: false
-  },
-  totalPrice: {
-    type: DataTypes.DECIMAL(10, 2),
-    allowNull: false
-  },
-  paymentMethodCode: DataTypes.STRING,
-  isDeleted: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: false
-  },
-  createdAt: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: DataTypes.NOW
-  },
-  updatedAt: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    defaultValue: DataTypes.NOW
-  }
-}, {
-  sequelize,
-  modelName: 'OrderItem',
-  schema: 'kredika_app',
-  tableName: 'order_items',
-  hooks: {
-    beforeDestroy: (instance, _options) => {
-      // Suppression logique au lieu de physique
-      instance.isDeleted = true;
-      instance.save();
-      return false; // Empêche la suppression physique
-    }
-  },
-  defaultScope: {
-    where: {
-      isDeleted: false
-    }
-  },
-  scopes: {
-    withDeleted: {
-      where: {}
+  OrderItem.init({
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true
     },
-    onlyDeleted: {
+    orderId: DataTypes.UUID,
+    productId: DataTypes.UUID,
+    quantity: DataTypes.INTEGER,
+    unitPrice: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false
+    },
+    totalPrice: {
+      type: DataTypes.DECIMAL(10, 2),
+      allowNull: false
+    },
+    paymentMethodCode: DataTypes.STRING,
+    isDeleted: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW
+    },
+    updatedAt: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      defaultValue: DataTypes.NOW
+    }
+  }, {
+    sequelize,
+    modelName: 'OrderItem',
+    schema: 'kredika_app',
+    tableName: 'order_items',
+    hooks: {
+      beforeDestroy: (instance, _options) => {
+        // Suppression logique au lieu de physique
+        instance.isDeleted = true;
+        instance.save();
+        return false; // Empêche la suppression physique
+      }
+    },
+    defaultScope: {
       where: {
-        isDeleted: true
+        isDeleted: false
+      }
+    },
+    scopes: {
+      withDeleted: {
+        where: {}
+      },
+      onlyDeleted: {
+        where: {
+          isDeleted: true
+        }
       }
     }
-  }
-});
-return OrderItem;
+  });
+  return OrderItem;
 };
